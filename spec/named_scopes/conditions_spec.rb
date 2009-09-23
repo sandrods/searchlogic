@@ -76,6 +76,12 @@ describe "Conditions" do
       %w(bjohnson thunt).each { |username| User.create(:username => username) }
       User.username_not_end_with("son").all.should == User.find_all_by_username("thunt")
     end
+    
+    it "should have case-insensitive like" do
+      %w(Bjohnson thunt).each { |username| User.create(:username => username) }
+      User.username_ci_like("Thunt").all.should == User.find_all_by_username("thunt")
+      User.username_ci_like("bjohnson").all.should == User.find_all_by_username("Bjohnson")
+    end
   end
   
   context "boolean conditions" do
@@ -266,6 +272,10 @@ describe "Conditions" do
     
     it "should have nil" do
       User.username_nil.proxy_options.should == User.username_nil.proxy_options
+    end
+
+    it "should have case_insensitive_like" do
+      User.username_case_insensitive_like(5).proxy_options.should == User.username_ci_like(5).proxy_options
     end
   end
   

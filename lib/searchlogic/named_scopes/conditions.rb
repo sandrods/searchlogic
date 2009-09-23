@@ -21,6 +21,7 @@ module Searchlogic
       WILDCARD_CONDITIONS = {
         :like => [:contains, :includes],
         :not_like => [],
+        :ci_like => [:case_insensitive_like],
         :begins_with => [:bw],
         :not_begin_with => [:does_not_begin_with],
         :ends_with => [:ew],
@@ -103,6 +104,8 @@ module Searchlogic
             scope_options(condition, column_type, "#{table_name}.#{column} > ?")
           when /^like/
             scope_options(condition, column_type, "#{table_name}.#{column} #{match_keyword} ?", :like)
+          when /^ci_like/
+            scope_options(condition, column_type, "upper(#{table_name}.#{column}) #{match_keyword} ?", :ci_like)
           when /^not_like/
             scope_options(condition, column_type, "#{table_name}.#{column} NOT #{match_keyword} ?", :like)
           when /^begins_with/
@@ -159,6 +162,8 @@ module Searchlogic
           case modifier
           when :like
             "%#{value}%"
+          when :ci_like
+            "%#{value.to_s.upcase}%"
           when :begins_with
             "#{value}%"
           when :ends_with
